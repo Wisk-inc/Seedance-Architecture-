@@ -1,0 +1,52 @@
+# Standalone packaging for the seedance package, used when it is distributed
+# outside the Wan2.1 tree (this is the pyproject.toml at the root of the zip).
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seedance"
+version = "0.1.0"
+description = "Seedance architecture implementation and a staged pipeline over open Wan weights"
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "torch>=2.4.0",
+    "huggingface_hub>=0.25.0",
+    "transformers>=4.49.0",
+    "imageio>=2.34.0",
+    "imageio-ffmpeg",
+    "pillow>=10.0.0",
+    "numpy>=1.23.5,<2",
+]
+
+[project.optional-dependencies]
+# Wan2.2+ checkpoints and the diffusers backend
+diffusers = ["diffusers>=0.31.0", "accelerate>=1.1.1"]
+# stage 2/4 helpers; each missing one falls back to a documented alternative
+stages = ["opencv-python>=4.9.0.80", "torchvision>=0.19.0"]
+physics = ["pybullet"]
+identity = ["insightface", "onnxruntime"]
+ui = ["gradio>=5.0.0"]
+dev = ["pytest"]
+
+[project.scripts]
+seedance = "seedance.cli:main"
+
+[tool.setuptools]
+packages = [
+    "seedance",
+    "seedance.models",
+    "seedance.flow",
+    "seedance.reward",
+    "seedance.backends",
+    "seedance.stages",
+    "seedance.pipelines",
+    "seedance.runtime",
+    "seedance.bench",
+    "seedance.examples",
+    "seedance.tests",
+]
+
+[tool.setuptools.package-data]
+"seedance" = ["**/*.md", "**/*.txt"]

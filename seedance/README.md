@@ -161,6 +161,21 @@ seconds — they check causality, window round-trips, RoPE norm preservation,
 mask effects, the flow parameterisation, and that a fresh DiT predicts exactly
 zero (adaLN-zero + zero head).
 
+## Using it outside this repo
+
+The package is self-contained: `wan` is imported lazily and only by the native
+Wan loader, so dropping `seedance/` into another project works. Install it
+standalone with the packaging file provided:
+
+```bash
+cp seedance/packaging/pyproject.standalone.toml ./pyproject.toml
+pip install .            # plus: pip install '.[diffusers,stages]'
+```
+
+The native Wan loader additionally needs the `wan` package (`pip install` from
+the Wan2.1 repo). Without it, the diffusers backend still handles every
+diffusers-format Wan checkpoint.
+
 ## Layout
 
 ```
