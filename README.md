@@ -34,6 +34,27 @@ In this repository, we present **Wan2.1**, a comprehensive and open suite of vid
 * Feb 27, 2025: 👋 **Wan2.1** has been integrated into [ComfyUI](https://comfyanonymous.github.io/ComfyUI_examples/wan/). Enjoy!
 * Feb 25, 2025: 👋 We've released the inference code and weights of **Wan2.1**.
 
+## Seedance-architecture package (`seedance/`)
+
+This tree also contains `seedance/`, a from-the-papers implementation of the
+**Seedance** architecture (decoupled spatial/temporal MMDiT, temporally-causal
+(4,16,16)/C=48 VAE with a Thin decoder, multishot MM-RoPE, the unified
+channel-concat task formulation, the cascaded refiner, the dual-branch audio
+design, TSCD/score/adversarial distillation, RewardDance and DanceGRPO), plus a
+four-stage pipeline that runs that recipe over **any Wan checkpoint**:
+
+```bash
+python -m seedance.cli doctor                 # what this machine can run
+python -m seedance.cli models                 # known Wan checkpoints
+python -m seedance.cli generate --model Wan-AI/Wan2.1-T2V-1.3B \
+    --prompt "a red fox trotting through fresh snow" --output fox.mp4
+```
+
+There are no public Seedance weights, so the architecture half runs but does not
+produce video; Wan is what generates. Every claim is provenance-tagged — see
+[`seedance/README.md`](seedance/README.md) and
+[`seedance/docs/PROVENANCE.md`](seedance/docs/PROVENANCE.md).
+
 ## Community Works
 If your work has improved **Wan2.1** and you would like more people to see it, please inform us.
 - [EchoShot](https://github.com/JoHnneyWang/EchoShot), a native multi-shot portrait video generation model based on **Wan2.1-T2V-1.3B**, allows generation of multiple video clips featuring the same character as well as highly flexible content controllability. Refer to [their project page](https://johnneywang.github.io/EchoShot-webpage/) for more information.

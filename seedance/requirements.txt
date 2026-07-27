@@ -1,0 +1,31 @@
+# Extras for the seedance package, on top of Wan2.1's requirements.txt.
+# Nothing here is needed to run `seedance models`, `seedance arch` or
+# `seedance doctor` -- those work on a bare interpreter.
+
+# --- required for generation -------------------------------------------------
+torch>=2.4.0
+huggingface_hub>=0.25.0
+transformers>=4.49.0
+imageio>=2.34.0
+imageio-ffmpeg
+pillow>=10.0.0
+numpy>=1.23.5,<2
+
+# --- strongly recommended ----------------------------------------------------
+diffusers>=0.31.0      # required for Wan2.2+ (diffusers-format) checkpoints
+accelerate>=1.1.1
+opencv-python>=4.9.0.80  # flow-based interpolation and Farneback fallback
+torchvision>=0.19.0      # RAFT optical flow
+
+# --- optional: each missing one means a documented fallback ------------------
+# pybullet             # stage 3 physics (otherwise the built-in analytic integrator)
+# mujoco               # stage 3 physics, alternative engine
+# insightface          # stage 2 face crop + ArcFace identity-drift measurement
+# onnxruntime          # insightface runtime
+# controlnet_aux       # stage 2 DWPose / OpenPose guides (no fallback: skipped)
+# gfpgan               # stage 4 face restoration
+# flash_attn           # faster attention (otherwise PyTorch SDPA)
+# xfuser               # sequence parallelism for multi-GPU
+
+# --- development -------------------------------------------------------------
+# pytest

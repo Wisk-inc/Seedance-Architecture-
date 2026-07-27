@@ -41,6 +41,9 @@ dev = [
     "huggingface-hub[cli]"
 ]
 
+[project.scripts]
+seedance = "seedance.cli:main"
+
 [project.urls]
 homepage = "https://wanxai.com"
 documentation = "https://github.com/Wan-Video/Wan2.1"
@@ -50,10 +53,11 @@ modelscope = "https://modelscope.cn/organization/Wan-AI"
 discord = "https://discord.gg/p5XbdQV7"
 
 [tool.setuptools]
-packages = ["wan"]
+packages = ["wan", "seedance"]
 
 [tool.setuptools.package-data]
 "wan" = ["**/*.py"]
+"seedance" = ["**/*.py", "**/*.md", "**/*.txt"]
 
 [tool.black]
 line-length = 88
