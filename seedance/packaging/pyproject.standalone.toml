@@ -49,4 +49,4 @@ packages = [
 ]
 
 [tool.setuptools.package-data]
-"seedance" = ["**/*.md", "**/*.txt"]
+"seedance" = ["**/*.md", "**/*.txt", "**/*.json", "**/*.svg", "**/*.png"]

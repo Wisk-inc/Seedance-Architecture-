@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1031" height="1140" viewBox="0 0 1031 1140" font-family="Inter, SF Pro Display, Helvetica Neue, Arial, sans-serif">
+<rect width="1031" height="1140" fill="#0B0C0E"/>
+<defs><pattern id="unmeasured" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="none"/><line x1="0" y1="0" x2="0" y2="6" stroke="#000000" stroke-opacity="0.38" stroke-width="3"/></pattern></defs>
+<text x="231" y="72" fill="#FFFFFF" font-size="40" font-weight="600">Capability coverage</text>
+<text x="231" y="100" fill="#6B7079" font-size="17" font-weight="500">what each stack can DO — not how good the video looks (see the quality table in</text>
+<text x="231" y="123" fill="#6B7079" font-size="17" font-weight="500">the README)</text>
+<line x1="231" y1="453.0" x2="961" y2="453.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<line x1="231" y1="353.0" x2="961" y2="353.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<line x1="231" y1="253.0" x2="961" y2="253.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<line x1="231" y1="153.0" x2="961" y2="153.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<path d="M231.21,553.00 L231.21,200.86 Q231.21,195.86 236.21,195.86 L272.21,195.86 Q277.21,195.86 277.21,200.86 L277.21,553.00 Z" fill="#C55A38"/>
+<text x="254.2" y="183.9" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="1.00">93</text>
+<g><rect x="232.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#E9E9EC"/><text x="254.2" y="597.0" fill="#101114" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="15.0" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">SD</text></g>
+<text x="260.2" y="645.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 260.2 645.0)">Seedance-staged + Wan VACE</text>
+<path d="M307.21,553.00 L307.21,300.70 Q307.21,295.70 312.21,295.70 L348.21,295.70 Q353.21,295.70 353.21,300.70 L353.21,553.00 Z" fill="#171A20"/>
+<path d="M307.21,553.00 L307.21,300.70 Q307.21,295.70 312.21,295.70 L348.21,295.70 Q353.21,295.70 353.21,300.70 L353.21,553.00 Z" fill="url(#unmeasured)"/>
+<text x="330.2" y="283.7" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="0.90">67</text>
+<g><rect x="308.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#16202B"/><text x="330.2" y="597.0" fill="#7FC4FF" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19.4" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">W</text></g>
+<text x="336.2" y="645.0" fill="#6B7079" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 336.2 645.0)">Wan 2.1 VACE (bare)</text>
+<path d="M383.21,553.00 L383.21,277.66 Q383.21,272.66 388.21,272.66 L424.21,272.66 Q429.21,272.66 429.21,277.66 L429.21,553.00 Z" fill="#12B886"/>
+<path d="M383.21,553.00 L383.21,277.66 Q383.21,272.66 388.21,272.66 L424.21,272.66 Q429.21,272.66 429.21,277.66 L429.21,553.00 Z" fill="url(#unmeasured)"/>
+<text x="406.2" y="260.7" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="1.00">73</text>
+<g><rect x="384.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#16202B"/><text x="406.2" y="597.0" fill="#7FC4FF" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19.4" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">W</text></g>
+<text x="412.2" y="645.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 412.2 645.0)">Wan 2.2 / 2.6</text>
+<path d="M459.21,553.00 L459.21,354.47 Q459.21,349.47 464.21,349.47 L500.21,349.47 Q505.21,349.47 505.21,354.47 L505.21,553.00 Z" fill="#171A20"/>
+<path d="M459.21,553.00 L459.21,354.47 Q459.21,349.47 464.21,349.47 L500.21,349.47 Q505.21,349.47 505.21,354.47 L505.21,553.00 Z" fill="url(#unmeasured)"/>
+<text x="482.2" y="337.5" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="0.90">53</text>
+<g><rect x="460.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#111A22"/><text x="482.2" y="597.0" fill="#5FB3E4" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19.4" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">H</text></g>
+<text x="488.2" y="645.0" fill="#6B7079" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 488.2 645.0)">HunyuanVideo</text>
+<path d="M535.21,553.00 L535.21,377.51 Q535.21,372.51 540.21,372.51 L576.21,372.51 Q581.21,372.51 581.21,377.51 L581.21,553.00 Z" fill="#171A20"/>
+<path d="M535.21,553.00 L535.21,377.51 Q535.21,372.51 540.21,372.51 L576.21,372.51 Q581.21,372.51 581.21,377.51 L581.21,553.00 Z" fill="url(#unmeasured)"/>
+<text x="558.2" y="360.5" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="0.90">47</text>
+<g><rect x="536.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#1A1620"/><text x="558.2" y="597.0" fill="#B79BFF" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19.4" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">C</text></g>
+<text x="564.2" y="645.0" fill="#6B7079" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 564.2 645.0)">CogVideoX-5B</text>
+<path d="M611.21,553.00 L611.21,377.51 Q611.21,372.51 616.21,372.51 L652.21,372.51 Q657.21,372.51 657.21,377.51 L657.21,553.00 Z" fill="#0E7C66"/>
+<path d="M611.21,553.00 L611.21,377.51 Q611.21,372.51 616.21,372.51 L652.21,372.51 Q657.21,372.51 657.21,377.51 L657.21,553.00 Z" fill="url(#unmeasured)"/>
+<text x="634.2" y="360.5" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="1.00">47</text>
+<g><rect x="612.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#E9E9EC"/><text x="634.2" y="597.0" fill="#101114" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="15.0" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">SD</text></g>
+<text x="640.2" y="645.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 640.2 645.0)">Seedance 2.0 (API)</text>
+<path d="M687.21,553.00 L687.21,404.39 Q687.21,399.39 692.21,399.39 L728.21,399.39 Q733.21,399.39 733.21,404.39 L733.21,553.00 Z" fill="#171A20"/>
+<path d="M687.21,553.00 L687.21,404.39 Q687.21,399.39 692.21,399.39 L728.21,399.39 Q733.21,399.39 733.21,404.39 L733.21,553.00 Z" fill="url(#unmeasured)"/>
+<text x="710.2" y="387.4" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="0.90">40</text>
+<g><rect x="688.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#151515"/><text x="710.2" y="597.0" fill="#FFFFFF" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19.4" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">O</text></g>
+<text x="716.2" y="645.0" fill="#6B7079" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 716.2 645.0)">Sora 2</text>
+<path d="M763.21,553.00 L763.21,404.39 Q763.21,399.39 768.21,399.39 L804.21,399.39 Q809.21,399.39 809.21,404.39 L809.21,553.00 Z" fill="#171A20"/>
+<path d="M763.21,553.00 L763.21,404.39 Q763.21,399.39 768.21,399.39 L804.21,399.39 Q809.21,399.39 809.21,404.39 L809.21,553.00 Z" fill="url(#unmeasured)"/>
+<text x="786.2" y="387.4" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="0.90">40</text>
+<g><rect x="764.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#101725"/><text x="786.2" y="597.0" fill="#8AB4F8" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19.4" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">V</text></g>
+<text x="792.2" y="645.0" fill="#6B7079" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 792.2 645.0)">Veo 3.1</text>
+<path d="M839.21,553.00 L839.21,404.39 Q839.21,399.39 844.21,399.39 L880.21,399.39 Q885.21,399.39 885.21,404.39 L885.21,553.00 Z" fill="#171A20"/>
+<path d="M839.21,553.00 L839.21,404.39 Q839.21,399.39 844.21,399.39 L880.21,399.39 Q885.21,399.39 885.21,404.39 L885.21,553.00 Z" fill="url(#unmeasured)"/>
+<text x="862.2" y="387.4" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="0.90">40</text>
+<g><rect x="840.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#1B1420"/><text x="862.2" y="597.0" fill="#D7A6FF" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19.4" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">K</text></g>
+<text x="868.2" y="645.0" fill="#6B7079" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 868.2 645.0)">Kling 3.0</text>
+<path d="M915.21,553.00 L915.21,431.27 Q915.21,426.27 920.21,426.27 L956.21,426.27 Q961.21,426.27 961.21,431.27 L961.21,553.00 Z" fill="#171A20"/>
+<path d="M915.21,553.00 L915.21,431.27 Q915.21,426.27 920.21,426.27 L956.21,426.27 Q961.21,426.27 961.21,431.27 L961.21,553.00 Z" fill="url(#unmeasured)"/>
+<text x="938.2" y="414.3" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="0.90">33</text>
+<g><rect x="916.2" y="575.0" width="44.0" height="44.0" rx="10" fill="#151515"/><text x="938.2" y="597.0" fill="#FFFFFF" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19.4" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">R</text></g>
+<text x="944.2" y="645.0" fill="#6B7079" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 944.2 645.0)">Runway Gen-4</text>
+<line x1="231" y1="954.0" x2="961" y2="954.0" stroke="#22252B" stroke-width="1"/>
+<text x="231" y="972.0" fill="#6B7079" font-size="14" font-weight="600">solid = measured by this harness</text>
+<rect x="231" y="982.0" width="14" height="11" rx="2" fill="#171A20"/><rect x="231" y="982.0" width="14" height="11" rx="2" fill="url(#unmeasured)"/><text x="253" y="991.0" fill="#6B7079" font-size="14">hatched = published (Wan2.1 README + VACE report arXiv:2503.07598)</text>
+<rect x="231" y="1002.0" width="14" height="11" rx="2" fill="#171A20"/><rect x="231" y="1002.0" width="14" height="11" rx="2" fill="url(#unmeasured)"/><text x="253" y="1011.0" fill="#6B7079" font-size="14">hatched = vendor-reported (Seedance 2.0 API docs (fal / Replicate / Volcano Engine))</text>
+<text x="231" y="1038.0" fill="#6B7079" font-size="13">15 axes, equally weighted: open weights · local/on-prem · T2V · I2V · FLF2V · subject reference ·</text>
+<text x="231" y="1060.0" fill="#6B7079" font-size="13">structural control · camera control · multi-shot · native synced audio · physics-targeted conditioning ·</text>
+<text x="231" y="1082.0" fill="#6B7079" font-size="13">built-in QA · seed reproducibility · custom identity training · zero marginal cost. A high bar here does</text>
+<text x="231" y="1104.0" fill="#6B7079" font-size="13">not mean better output.</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="981" height="1032" viewBox="0 0 981 1032" font-family="Inter, SF Pro Display, Helvetica Neue, Arial, sans-serif">
+<rect width="981" height="1032" fill="#0B0C0E"/>
+<defs><pattern id="unmeasured" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="none"/><line x1="0" y1="0" x2="0" y2="6" stroke="#000000" stroke-opacity="0.38" stroke-width="3"/></pattern></defs>
+<text x="145" y="72" fill="#FFFFFF" font-size="40" font-weight="600">RewardDance: reward-model scaling</text>
+<text x="145" y="100" fill="#6B7079" font-size="17" font-weight="500">Seedance-1.0 T2V alignment improvement</text>
+<text x="145" y="123" fill="#6B7079" font-size="17" font-weight="500">(GSB) by reward-model size</text>
+<line x1="145" y1="453.0" x2="267" y2="453.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<line x1="145" y1="353.0" x2="267" y2="353.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<line x1="145" y1="253.0" x2="267" y2="253.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<line x1="145" y1="153.0" x2="267" y2="153.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<path d="M144.98,553.00 L144.98,371.33 Q144.98,366.33 149.98,366.33 L185.98,366.33 Q190.98,366.33 190.98,371.33 L190.98,553.00 Z" fill="#171A20"/>
+<path d="M144.98,553.00 L144.98,371.33 Q144.98,366.33 149.98,366.33 L185.98,366.33 Q190.98,366.33 190.98,371.33 L190.98,553.00 Z" fill="url(#unmeasured)"/>
+<text x="168.0" y="354.3" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="0.90">28%</text>
+<g><rect x="146.0" y="575.0" width="44.0" height="44.0" rx="10" fill="#E9E9EC"/><text x="168.0" y="597.0" fill="#101114" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="15.0" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">SD</text></g>
+<text x="174.0" y="645.0" fill="#6B7079" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 174.0 645.0)">1B reward model</text>
+<path d="M220.98,553.00 L220.98,231.33 Q220.98,226.33 225.98,226.33 L261.98,226.33 Q266.98,226.33 266.98,231.33 L266.98,553.00 Z" fill="#0E7C66"/>
+<path d="M220.98,553.00 L220.98,231.33 Q220.98,226.33 225.98,226.33 L261.98,226.33 Q266.98,226.33 266.98,231.33 L266.98,553.00 Z" fill="url(#unmeasured)"/>
+<text x="244.0" y="214.3" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="1.00">49%</text>
+<g><rect x="222.0" y="575.0" width="44.0" height="44.0" rx="10" fill="#E9E9EC"/><text x="244.0" y="597.0" fill="#101114" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="15.0" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">SD</text></g>
+<text x="250.0" y="645.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 250.0 645.0)">26B reward model</text>
+<line x1="145" y1="843.6" x2="911" y2="843.6" stroke="#22252B" stroke-width="1"/>
+<text x="145" y="861.6" fill="#6B7079" font-size="14" font-weight="600">solid = measured by this harness</text>
+<rect x="145" y="871.6" width="14" height="11" rx="2" fill="#171A20"/><rect x="145" y="871.6" width="14" height="11" rx="2" fill="url(#unmeasured)"/><text x="167" y="880.6" fill="#6B7079" font-size="14">hatched = published (RewardDance, arXiv:2509.08826)</text>
+<text x="145" y="907.6" fill="#6B7079" font-size="13">Bigger reward models keep reward variance high</text>
+<text x="145" y="929.6" fill="#6B7079" font-size="13">during RL, which is the mechanism that resists</text>
+<text x="145" y="951.6" fill="#6B7079" font-size="13">reward hacking and mode collapse. This is why</text>
+<text x="145" y="973.6" fill="#6B7079" font-size="13">the ceiling on RLHF quality is set by the reward</text>
+<text x="145" y="995.6" fill="#6B7079" font-size="13">model, not the generator.</text>
+</svg>

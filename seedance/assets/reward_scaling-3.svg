@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="755" height="1142" viewBox="0 0 755 1142" font-family="Inter, SF Pro Display, Helvetica Neue, Arial, sans-serif">
+<rect width="755" height="1142" fill="#0B0C0E"/>
+<defs><pattern id="unmeasured" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="none"/><line x1="0" y1="0" x2="0" y2="6" stroke="#000000" stroke-opacity="0.38" stroke-width="3"/></pattern></defs>
+<text x="197" y="72" fill="#FFFFFF" font-size="40" font-weight="600">Physics-IQ</text>
+<text x="197" y="100" fill="#6B7079" font-size="17" font-weight="500">physical understanding — the ceiling</text>
+<text x="197" y="123" fill="#6B7079" font-size="17" font-weight="500">every video model is under</text>
+<line x1="197" y1="453.0" x2="319" y2="453.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<line x1="197" y1="353.0" x2="319" y2="353.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<line x1="197" y1="253.0" x2="319" y2="253.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<line x1="197" y1="153.0" x2="319" y2="153.0" stroke="#22252B" stroke-width="1" stroke-dasharray="6 7"/>
+<path d="M196.72,553.00 L196.72,471.93 Q196.72,466.93 201.72,466.93 L237.72,466.93 Q242.72,466.93 242.72,471.93 L242.72,553.00 Z" fill="#171A20"/>
+<path d="M196.72,553.00 L196.72,471.93 Q196.72,466.93 201.72,466.93 L237.72,466.93 Q242.72,466.93 242.72,471.93 L242.72,553.00 Z" fill="url(#unmeasured)"/>
+<text x="219.7" y="454.9" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="0.90">24.1%</text>
+<g><rect x="197.7" y="575.0" width="44.0" height="44.0" rx="10" fill="#101725"/><text x="219.7" y="597.0" fill="#8AB4F8" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="15.0" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">VP</text></g>
+<text x="225.7" y="645.0" fill="#6B7079" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 225.7 645.0)">VideoPoet</text>
+<path d="M272.72,553.00 L272.72,200.86 Q272.72,195.86 277.72,195.86 L313.72,195.86 Q318.72,195.86 318.72,200.86 L318.72,553.00 Z" fill="#0E7C66"/>
+<path d="M272.72,553.00 L272.72,200.86 Q272.72,195.86 277.72,195.86 L313.72,195.86 Q318.72,195.86 318.72,200.86 L318.72,553.00 Z" fill="url(#unmeasured)"/>
+<text x="295.7" y="183.9" fill="#FFFFFF" font-size="31" font-weight="700" text-anchor="middle" fill-opacity="1.00">100%</text>
+<g><rect x="273.7" y="575.0" width="44.0" height="44.0" rx="10" fill="#17181C"/><text x="295.7" y="597.0" fill="#8A8F98" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19.4" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">?</text></g>
+<text x="301.7" y="645.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="end" transform="rotate(-52 301.7 645.0)">Real-world upper bound</text>
+<line x1="197" y1="909.8" x2="685" y2="909.8" stroke="#22252B" stroke-width="1"/>
+<text x="197" y="927.8" fill="#6B7079" font-size="14" font-weight="600">solid = measured by this harness</text>
+<rect x="197" y="937.8" width="14" height="11" rx="2" fill="#171A20"/><rect x="197" y="937.8" width="14" height="11" rx="2" fill="url(#unmeasured)"/><text x="219" y="946.8" fill="#6B7079" font-size="14">hatched = published (Physics-IQ, arXiv:2501.09038)</text>
+<text x="197" y="973.8" fill="#6B7079" font-size="13">396 real videos, 66 scenarios, 3 perspectives.</text>
+<text x="197" y="995.8" fill="#6B7079" font-size="13">The paper's finding: physical understanding is</text>
+<text x="197" y="1017.8" fill="#6B7079" font-size="13">severely limited and unrelated to visual</text>
+<text x="197" y="1039.8" fill="#6B7079" font-size="13">realism. Only the VideoPoet figure is quoted</text>
+<text x="197" y="1061.8" fill="#6B7079" font-size="13">here because it is the one this repo can cite;</text>
+<text x="197" y="1083.8" fill="#6B7079" font-size="13">run `seedance bench` on your own generations to</text>
+<text x="197" y="1105.8" fill="#6B7079" font-size="13">add measured bars.</text>
+</svg>

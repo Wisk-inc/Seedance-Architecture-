@@ -57,7 +57,7 @@ packages = ["wan", "seedance"]
 
 [tool.setuptools.package-data]
 "wan" = ["**/*.py"]
-"seedance" = ["**/*.py", "**/*.md", "**/*.txt"]
+"seedance" = ["**/*.py", "**/*.md", "**/*.txt", "**/*.json", "**/*.svg", "**/*.png"]
 
 [tool.black]
 line-length = 88

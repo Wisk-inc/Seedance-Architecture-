@@ -1,180 +1,466 @@
-# seedance
+<p align="center">
+  <img src="assets/logo-wordmark.svg" alt="Seedance" width="620">
+</p>
 
-A Seedance-architecture implementation, plus a pipeline that runs it over any
-Wan checkpoint you can download from Hugging Face.
+<p align="center">
+  <b>A Seedance-architecture implementation, and a four-stage pipeline that runs it over any Wan checkpoint on Hugging Face.</b>
+</p>
 
-The package has two halves and it matters which is which:
-
-| | what it is | does it make video? |
-|---|---|---|
-| `seedance.models`, `seedance.flow`, `seedance.reward` | the Seedance architecture, implemented from the published reports | **no** — there are no public Seedance weights |
-| `seedance.pipelines`, `seedance.backends`, `seedance.stages` | the same four-stage recipe applied to open Wan weights | **yes** |
-
-Nothing here is a leak or a conversion of ByteDance weights. The architecture
-half is what the papers describe, built so it is trainable and inspectable; the
-pipeline half is what you run today.
+<p align="center">
+  <a href="#benchmarks">Benchmarks</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#requirements">Requirements</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#what-makes-it-seedance">What makes it Seedance</a> ·
+  <a href="#architecture-tutorial">Architecture tutorial</a>
+</p>
 
 ---
 
-## Install
+## Benchmarks
 
-From the repo root (this package lives inside the Wan2.1 tree so it can reuse
-Wan's loaders):
+<p align="center">
+  <img src="assets/capability_coverage.svg" alt="Capability coverage across video generators" width="880">
+</p>
+
+Read that chart carefully, because it is easy to misread. It measures **what
+each stack can do**, not how good the video looks. Solid bars are measured by
+this repo's harness; hatched bars are published or vendor-reported, with the
+citation in the legend. That distinction is enforced in code — an entry with a
+non-measured number and no citation raises at load time.
+
+### Where this stack actually stands
+
+| Axis | Leader | This stack | Honest gap |
+|---|---|---|---|
+| **Raw output quality** (T2V) | Seedance 2.0, then Sora 2 / Veo 3.1 / Kling 3.0 | Wan-class | Large. Vendor evals put Seedance 2.0 first (Arena Elo 1450 ±15 T2V, 1449 ±11 I2V — *their* numbers, preliminary at access time). |
+| **Motion stability** | Seedance 2.0 | Wan 2.1/2.2 + Stage 4 | Meaningful. Stage 4 fixes flicker and drift, not motion coherence. |
+| **Native synced audio** | Seedance 1.5/2.0 (dual-branch, binaural multi-track) | ✗ | Not reproducible. Wan 2.1 has no audio branch; we mix authored tracks. |
+| **Multi-shot narrative** | Seedance 2.0 (native, one sequence) | chained shots, colour-matched seams | Real but smaller gap. |
+| **Physical plausibility** | nobody | proxy-conditioned | Physics-IQ: "severely limited, and unrelated to visual realism" for *every* model tested; VideoPoet scored 24.1%. |
+| **Capability coverage** | **this stack (93)** | — | Open weights, local, structural + camera + physics control, LoRA identities, built-in QA, zero marginal cost. |
+| **Control fidelity** | **this stack** | — | Depth/pose/flow/trajectory/physics guides through VACE; no API exposes this. |
+| **Reproducibility** | **this stack** | — | Same seed + weights + config = same frames. Closed APIs re-roll silently. |
+| **Cost per clip** | **this stack** | — | Zero after hardware. |
+
+So: if you want the best-looking eight seconds, use the Seedance 2.0 API. If you
+want control, privacy, custom identities, reproducibility and no per-clip bill,
+this is the stack — and the chart above is what that trade looks like.
+
+### Per-benchmark detail
+
+| Benchmark | What it measures | Who leads | Our position | Run it |
+|---|---|---|---|---|
+| **Capability coverage** | 15 feature axes | **this stack, 93** | 1st | `seedance chart --results capability_coverage` |
+| **Stage ablation** | does each stage earn its runtime, on your GPU | measured locally | — | `seedance ablate --model <repo>` |
+| **Temporal QA** | smoothness, flicker, colour drift, structural persistence | measured locally | — | `seedance bench out.mp4` |
+| **Physics-IQ** | physical understanding vs a real continuation | nobody (24.1% for VideoPoet) | proxy conditioning helps, does not solve | `seedance.bench.physics_iq` |
+| **RewardDance scaling** | RM size → alignment gain | 26B RM: +49.0% vs 1B: +28.0% | implemented; no weights shipped | `seedance chart --results reward_scaling` |
+| **DanceGRPO** | RL gain on rectified flows | +56% visual / +181% motion (HunyuanVideo) | implemented | `seedance.reward.dance_grpo` |
+
+<p align="center">
+  <img src="assets/reward_scaling-1.svg" alt="RewardDance reward-model scaling" width="420">
+  <img src="assets/reward_scaling-3.svg" alt="Physics-IQ ceiling" width="420">
+</p>
+
+### Make your own chart
+
+Every chart here is generated from a JSON file, in the same style:
 
 ```bash
-pip install -r requirements.txt              # Wan itself
-pip install -r seedance/requirements.txt     # this package's extras
+seedance chart --all                      # re-render the shipped ones
+
+cat > mine.json <<'JSON'
+{
+  "title": "Coding",
+  "subtitle": "pass@1 on our internal suite",
+  "y_max": 100,
+  "entries": [
+    {"name": "Ours",     "value": 77, "logo": "seedance", "source": "measured", "highlight": true},
+    {"name": "Baseline", "value": 59, "logo": "wan", "source": "published",
+     "citation": "arXiv:2503.20314"}
+  ]
+}
+JSON
+seedance chart --results mine.json --out mine.svg --png
 ```
 
-Then check the machine:
+Vendor logos are not shipped — they are trademarks. Drop `sora.svg`, `veo.svg`,
+… into `seedance/bench/logos/` and they replace the built-in monograms
+automatically; see [`bench/logos/README.md`](bench/logos/README.md).
+
+---
+
+## Quick start
 
 ```bash
-python -m seedance.cli doctor
-```
+git clone https://github.com/Wan-Video/Wan2.1 && cd Wan2.1
+pip install -r requirements.txt              # Wan
+pip install -r seedance/requirements.txt     # this package
 
-It prints what is installed, how much VRAM you have, which optional stages will
-engage rather than silently falling back, and which checkpoint to start with.
-
-## Generate
-
-```bash
+python -m seedance.cli doctor                # what this machine can run
 python -m seedance.cli generate \
   --model Wan-AI/Wan2.1-T2V-1.3B \
   --prompt "a red fox trotting through fresh snow at dawn" \
-  --preset balanced \
-  --output fox.mp4
+  --preset balanced --output fox.mp4
 ```
 
-The model is downloaded, inspected, and driven through all four stages. Any Wan
-repo id works — `Wan-AI/Wan2.2-TI2V-5B`, an I2V checkpoint, a VACE checkpoint, a
-community fine-tune, or a local directory. From Python:
+`doctor` reports your GPU, which dependencies are missing, which optional
+stages will silently fall back, and which checkpoint to start with. Run it
+first; it saves an hour.
+
+No GPU? `--model mock` exercises the entire pipeline with a synthetic generator
+and no downloads.
+
+---
+
+## Requirements
+
+### Hardware
+
+| GPU VRAM | Checkpoint | Resolution | ~time / 5 s clip |
+|---|---|---|---|
+| 8–12 GB | `Wan2.1-T2V-1.3B` | 480p | 4–8 min |
+| 12–24 GB | `Wan2.2-TI2V-5B` | 720p | 5–10 min |
+| 24–48 GB | `Wan2.1-T2V-14B` (fp8) | 480p | 3–5 min |
+| 48–80 GB | `Wan2.1-T2V-14B` / `Wan2.2-A14B` | 720p | 8–15 min |
+| none | `--model mock` | — | seconds (synthetic, no weights) |
+
+Order-of-magnitude figures; they swing with steps, precision and offload.
+`seedance.runtime.memory.plan_vram()` estimates before you commit and applies
+fixes cheapest-first: text encoder → CPU, VAE tiling, model offload, fp8, 480p,
+fewer frames, sequential offload.
+
+### Software
+
+| | Package | Why |
+|---|---|---|
+| **required** | Python ≥ 3.10, `torch ≥ 2.4`, `huggingface_hub`, `transformers ≥ 4.49`, `imageio`, `imageio-ffmpeg`, `pillow`, `numpy < 2` | download, load, sample, write video |
+| **recommended** | `diffusers ≥ 0.31`, `accelerate` | Wan 2.2+ (diffusers-format) checkpoints |
+| | `opencv-python`, `torchvision` | flow interpolation, RAFT |
+| | `ffmpeg` | audio muxing, clip concatenation |
+| **optional** | `pybullet` / `mujoco` | Stage 3 physics (else: built-in analytic integrator) |
+| | `insightface` + `onnxruntime` | face crop + ArcFace identity drift (else: crop-correlation proxy) |
+| | `controlnet_aux` | DWPose/OpenPose guides (**no fallback** — a fabricated skeleton is worse than none) |
+| | `gfpgan` | face restoration |
+| | `flash_attn` | faster attention (else: PyTorch SDPA) |
+| | `cairosvg` | PNG export for charts (SVG always works) |
+| | `gradio` | the web UI |
+
+None of it is needed for `seedance models`, `arch`, `chart` or `inspect` —
+those run on a bare interpreter.
+
+---
+
+## Usage
+
+### CLI
+
+```bash
+seedance doctor                                   # environment + GPU report
+seedance models                                   # known Wan checkpoints
+seedance inspect <repo-or-path>                   # what is this checkpoint?
+seedance arch --variant seedance-2.0              # architecture summary
+seedance generate --model <repo> --prompt "..."   # generate
+seedance bench out.mp4                            # QA metrics on a clip
+seedance chart --results capability_coverage      # render a chart
+seedance ablate --model <repo>                    # measure what the stages add
+```
+
+Full `generate`:
+
+```bash
+seedance generate \
+  --model Wan-AI/Wan2.1-VACE-1.3B \
+  --prompt "a marble rolls off a table and bounces on tile" \
+  --preset cinematic \
+  --size 832*480 --frames 81 --steps 40 --seed 42 \
+  --subject "a green glass marble with a white swirl" \
+  --physics bouncing_ball --physics-engine auto \
+  --depth --camera dolly \
+  --interpolate 2 --upscale 2 \
+  --storyboard shots.txt \
+  --output out.mp4 --report run.json
+```
+
+* `--preset` — `fast` | `balanced` | `quality` | `cinematic`
+* `--subject` — locked into every shot's caption; the cheapest identity trick there is
+* `--storyboard` — one shot caption per line; shots are chained and seam-matched
+* `--dry-run` — resolve the whole plan and print it without sampling
+* `--offline-prompt` — rewrite prompts with templates, never download an LLM
+
+### Python
 
 ```python
 from seedance import SeedancePipeline
-
-pipe = SeedancePipeline("Wan-AI/Wan2.1-T2V-1.3B")
-result = pipe.generate("a red fox trotting through fresh snow", output="fox.mp4")
-print(result.summary())
-```
-
-Other commands:
-
-```bash
-python -m seedance.cli models                      # known checkpoints
-python -m seedance.cli inspect <repo-or-path>      # what is this checkpoint?
-python -m seedance.cli arch --variant seedance-2.0 # the architecture, summarised
-python -m seedance.cli bench out.mp4               # QA metrics on a finished clip
-python -m seedance.cli generate ... --dry-run      # resolve the plan, sample nothing
-```
-
-## The four stages
-
-| stage | what it does | Seedance analog |
-|---|---|---|
-| 1. prompt | dense-caption rewriting, storyboard expansion, subject locking | the Qwen2.5-14B PE model (SFT + DPO) |
-| 2. identity + motion | VACE/Phantom references, LoRA, caption locking; depth / pose / flow / camera / trajectory guides | *none* — Seedance gets this from multi-shot training + RLHF |
-| 3. physics | simulate a proxy scene, render it, condition on it | *none* — Seedance has **no physics engine** |
-| 4. polish | colour stabilisation → interpolation → face restore → upscale → QA | partly the diffusion refiner; mostly not needed at Seedance's quality |
-
-Presets: `fast`, `balanced`, `quality`, `cinematic`.
-
-```python
 from seedance.pipelines.staged import StageSettings
+from seedance.stages.identity import IdentityConfig
+from seedance.stages.motion import CameraTrajectory
 from seedance.stages.physics import PhysicsScene
 
 settings = StageSettings.preset("quality")
 settings.subject_lock = "A woman in a red wool coat, shoulder-length dark hair"
+settings.identity = IdentityConfig(reference_images=["hero.png"], method="auto")
+settings.camera = CameraTrajectory.orbit(num_frames=81, degrees=45)
 settings.physics = PhysicsScene.collision(fps=16)
-settings.use_depth = True
+settings.polish.interpolate = 2
+
+pipe = SeedancePipeline("Wan-AI/Wan2.1-VACE-1.3B", settings=settings)
+print(pipe.capability_report())        # what this checkpoint can and cannot do
+
+result = pipe.generate(
+    "two billiard balls collide on a slate table",
+    size="832*480", num_frames=81, seed=42, output="collide.mp4",
+)
+print(result.summary())
+print(result.report["polish"]["qa"])   # temporal QA on the finished clip
 ```
 
-Stage order in stage 4 is deliberate: interpolating before fixing colour drift
-propagates the drift; upscaling before restoring faces amplifies artifacts.
+### Image-to-video, first-last-frame, multi-shot
 
-## What is *not* reproducible from open weights
+```python
+# I2V — the task is inferred from the inputs and the checkpoint
+pipe.generate("she turns to face the camera", image="frame0.png", output="i2v.mp4")
 
-`pipe.capability_report()` returns this list at runtime, and the pipeline puts
-it in every report:
+# FLF2V — both boundaries pinned
+pipe.generate("the door swings open", image="closed.png", last_image="open.png",
+              output="flf2v.mp4")
 
-* **native joint audio-video** — Seedance 1.5/2.0 generate both in one
-  dual-branch model. Wan 2.1 has no audio branch. `seedance.stages.audio_stage`
-  mixes and muxes authored tracks; synchronisation is placed by you, not generated.
-* **the `@mention` 4-modality reference system** — documented only at product
-  level; `seedance.story` implements the *surface* (budgets, roles, resolution),
-  not the token injection.
-* **emergent physics** — see stage 3 above.
-* **the reported ~90% first-try usability rate.**
+# multi-shot: shots generated in order, chained through I2V/FLF2V, seams colour-matched
+from seedance.story import Shot, Storyboard
 
-The honest ceiling for the open stack is roughly 60–70% of Seedance behaviour,
-and that figure is an engineering judgment, not a measurement.
+board = Storyboard("a morning routine")
+board.add(Shot("she pours coffee, close on the cup", 33))
+board.add(Shot("she walks to the window, medium shot", 33))
+board.add(Shot("she looks out at the rain, over the shoulder", 33))
+pipe.generate("a morning routine", storyboard=board, output="shots.mp4")
+```
 
-## The architecture half
+### Web UI / Hugging Face Space
+
+```bash
+python -m seedance.app_gradio --model Wan-AI/Wan2.1-T2V-1.3B
+```
+
+The same file works as a Space entry point: set `SEEDANCE_MODEL`, use a GPU
+tier (L4/A10G for 1.3B). Weights load lazily on the first generate, so the
+Space boots instantly instead of downloading at startup.
+
+---
+
+## How it works
+
+```
+prompt ──► Stage 1  dense-caption rewrite (Qwen or templates), storyboard split
+              │
+              ▼
+        Stage 2  identity: VACE/Phantom refs · LoRA · locked subject clause
+                 motion:   depth · pose · flow · camera (Plücker) · trajectory
+              │
+              ▼
+        Stage 3  physics proxy: simulate → render → guide video  (PhysGen pattern)
+              │
+              ├──── guides blended into ONE control video ────┐
+              ▼                                               ▼
+        ┌──────────────── backend ─────────────────┐   (VACE control path)
+        │ any Wan checkpoint, auto-detected:       │
+        │ native loader | diffusers | MoE | mock   │
+        └──────────────────────────────────────────┘
+              │
+              ▼
+        Stage 4  colour stabilise → interpolate → face restore → upscale → QA
+              │
+              ▼
+           mp4 + JSON report (timings, stages, QA, warnings)
+```
+
+**Stage-4 order is not arbitrary.** Interpolating before fixing colour drift
+propagates the drift into the new frames; upscaling before restoring faces
+amplifies artifacts the restorer then fights; QA runs last, on the actual
+deliverable.
+
+**The backend is detected from files, not names.** `model_index.json` or a
+`transformer/` folder → diffusers. `Wan2.x_VAE.pth` + `models_t5_umt5-*.pth` →
+native loader. A CLIP `.pth`, or `in_dim ≥ 32` in `config.json` → I2V.
+`high_noise_model/` + `low_noise_model/` → Wan 2.2 MoE. `*.gguf` → flagged with
+a pointer to ComfyUI-GGUF. That is why community fine-tunes and mirrors load.
+
+**Unusable controls are reported, never dropped silently.** Ask for a depth
+guide on a plain T2V checkpoint and the warning lands in the result object and
+the JSON report — the failure mode worth avoiding is a control signal quietly
+ignored for a whole render.
+
+---
+
+## What makes it Seedance
+
+`seedance/models` implements what ByteDance actually published. Every row is
+tagged with its source; the claim-by-claim table is in
+[`docs/PROVENANCE.md`](docs/PROVENANCE.md).
+
+| Seedance mechanism | Source | Implemented in |
+|---|---|---|
+| Decoupled spatial / temporal layers | `[1.0]` | `models/dit.py` |
+| MMDiT joint attention **only** in spatial layers, per-modality weights | `[1.0]` | `models/dit.py`, `models/attention.py` |
+| Window partitioning inside temporal layers | `[1.0]` | `models/attention.py` |
+| Q/K normalisation before attention | `[1.0]` | `models/attention.py` |
+| Multishot MM-RoPE (3D visual + 1D text, per-shot offsets) | `[1.0]` | `models/rope.py` |
+| Unified task formulation (channel-concat + binary mask) | `[1.0]` | `models/conditioning.py` |
+| Temporally-causal 3D VAE, (4,16,16), C=48 | `[1.0]` | `models/vae3d.py` |
+| No DiT-side patchify (DC-AE) | `[1.0]` | `config.py` (`patch_size=(1,1,1)`) |
+| PatchGAN hybrid discriminator (appearance + motion) | `[1.0]` | `models/vae3d.py` |
+| Thin VAE decoder (~2× faster decode) | `[1.0]` | `models/vae3d.py` |
+| Decoder-only LLM as text encoder | `[1.0]` | `models/text_encoder.py` |
+| Qwen2.5-14B prompt-engineering stage (SFT → DPO) | `[1.0]` | `stages/prompt_enhancer.py` |
+| Cascaded 480p → 720p/1080p refiner | `[1.0]` | `models/refiner.py` |
+| TSCD + score + adversarial distillation | `[1.0]` | `flow/distill.py` |
+| RewardDance (yes-token reward, RM scaling) | `arXiv:2509.08826` | `reward/reward_dance.py` |
+| DanceGRPO (GRPO over the denoising MDP) | `arXiv:2505.07818` | `reward/dance_grpo.py` |
+| Dual-branch DiT + cross-modal joint module | `[1.5/2.0]` | `models/audio.py` |
+| Rectified-flow / MMDiT backbone | `[1.5/2.0]` | `flow/rectified_flow.py` |
+| 4–15 s, 480p/720p, 3 video / 9 image / 3 audio references | `[product]` | `config.py`, `story.py` |
+
+**And what is *not* Seedance, stated plainly:** there is no physics engine
+anywhere in the Seedance stack — its plausibility is emergent from data
+curation and reward modelling. Stage 3 is a different approach (PhysGen-style
+proxy conditioning) that helps on collision and gravity shots and is brittle
+elsewhere. The widely repeated "DB-DiT with a millisecond-level attention
+bridge" description is marketing copy, not paper content, so `models/audio.py`
+makes the tokenizer configurable rather than asserting a design.
+
+---
+
+## Architecture tutorial
+
+There are **no public Seedance weights**. The architecture runs, trains and can
+be inspected; from scratch it emits noise, which is correct for an untrained
+model and is stated in every result object it returns.
+
+### 1. Look at it
+
+```bash
+python -m seedance.cli arch --variant seedance-2.0
+```
+
+```
+VAE stride         : (4, 16, 16)  latent channels: 48
+DiT dim/heads      : 3584/28
+spatial layers     : 28 (MMDiT, intra-frame, text+visual)
+temporal layers    : 28 (visual only, window (8, 8))
+patch size         : (1, 1, 1) (DC-AE: no DiT-side patchify)
+audio branch       : on, tracks ('music', 'ambience', 'voice')
+flow               : rectified, shift 5.0, 50 steps, solver unipc
+latent for 97f 480x832: C=48 T=25 H=30 W=52
+```
+
+### 2. Run it end to end (CPU, seconds)
 
 ```bash
 python -m seedance.examples.native_architecture --variant dev-tiny
 ```
 
-Runs the whole thing on CPU in seconds: VAE round trip, a training step with
-gradients, multi-shot sampling. What is implemented, and where it comes from:
+VAE round trip → training step with gradients → multi-shot sampling → decode.
 
-* **Decoupled spatial/temporal MMDiT** (`models/dit.py`) — spatial layers do
-  intra-frame attention jointly over visual+text tokens with separate per-modality
-  weights; temporal layers do inter-frame attention over visual tokens only,
-  inside spatial windows. Q/K normalised before attention.
-* **Temporally-causal 3D VAE** (`models/vae3d.py`) — (4,16,16) downsampling,
-  C=48, MAGVIT-style causality, PatchGAN hybrid discriminator, and the **Thin
-  decoder** that narrows the stages nearest pixel space for ~2× faster decode.
-* **Multishot MM-RoPE** (`models/rope.py`) — 3D axial RoPE for visual tokens,
-  1D for text, per-shot temporal offsets so cuts need no special tokens.
-* **Unified task formulation** (`models/conditioning.py`) — noisy latents
-  channel-concatenated with clean/zero frames plus a binary mask; one mechanism
-  for t2v / i2v / flf2v / v2v / extend / inpaint.
-* **Cascaded refiner** (`models/refiner.py`) — 480p base → partial-noise
-  trajectory at 720p/1080p.
-* **Dual-branch audio** (`models/audio.py`) — audio DiT plus a cross-modal joint
-  module with an explicit ±120 ms alignment mask, zero-gated so it is a no-op
-  when bolted onto a trained video model.
-* **Rectified flow** (`flow/`) — SD3-style shift and logit-normal sampling,
-  CFG with rescale and CFG-Zero*, UniPC/DPM++ via Wan's solvers.
-* **Distillation** (`flow/distill.py`) — TSCD, score distillation, adversarial
-  distillation with a preference head, and a staged plan runner.
-* **RewardDance + DanceGRPO** (`reward/`) — yes-token generative reward over any
-  VLM, normalised multi-reward advantages, GRPO over the denoising MDP. Weightless
-  heuristic proxies let the RL loop run with no downloads.
+### 3. Build the pieces yourself
 
-Every config field and class carries a provenance tag: `[1.0]` for the Seedance
-1.0 technical report, `[1.5/2.0]` for the later abstracts, `[inferred]` for
-reconstruction. See `docs/PROVENANCE.md` for the full claim-by-claim table —
-including the widely repeated "DB-DiT with a millisecond-level attention bridge"
-claim, which comes from marketing copy and not from any paper.
+```python
+import torch
+from seedance.config import get_config
+from seedance.models.vae3d import TemporallyCausalVAE
+from seedance.models.dit import SeedanceDiT
+from seedance.models.conditioning import build_condition
 
-## Tests
+cfg = get_config("seedance-1.0")           # real geometry: (4,16,16), C=48
 
-```bash
-python -m pytest seedance/tests -q
+vae = TemporallyCausalVAE(cfg.vae).eval()
+video   = torch.randn(1, 3, 9, 64, 64)     # frames must be 1 + 4k
+latents = vae.encode(video, sample=False)  # -> [1, 48, 3, 4, 4]
+frames  = vae.decode(latents)              # -> [1, 3, 9, 64, 64]
+
+# long clips stream through a rolling causal cache, bit-identical to one pass
+chunked = vae.decode(latents, chunk_frames=1)
+assert (frames - chunked).abs().max() < 1e-5
+
+dit  = SeedanceDiT(cfg.dit)
+cond = build_condition(tuple(latents.shape), "i2v",
+                       clean_latents=latents[:, :, :1])    # pin the first frame
+velocity = dit(
+    latents, torch.tensor([500.0]),
+    text=torch.randn(1, 32, cfg.dit.text_dim),
+    condition=cond,
+    shot_lengths=[2, 1],                                   # multishot MM-RoPE
+)
 ```
 
-Torch-free tests (config, registry, checkpoint detection, storyboards, the
-physics integrator, prompt templates) run anywhere. The architecture tests skip
-themselves without torch and otherwise run at `dev-tiny` scale on CPU in a few
-seconds — they check causality, window round-trips, RoPE norm preservation,
-mask effects, the flow parameterisation, and that a fresh DiT predicts exactly
-zero (adaLN-zero + zero head).
+### 4. Train it
 
-## Using it outside this repo
+```python
+from seedance.pipelines.native import SeedanceNativePipeline
 
-The package is self-contained: `wan` is imported lazily and only by the native
-Wan loader, so dropping `seedance/` into another project works. Install it
-standalone with the packaging file provided:
-
-```bash
-cp seedance/packaging/pyproject.standalone.toml ./pyproject.toml
-pip install .            # plus: pip install '.[diffusers,stages]'
+pipe = SeedanceNativePipeline(get_config("dev-tiny"), device="cuda")
+loss, logs = pipe.training_step(video_batch, ["a dense caption", "another one"])
+loss.backward()
 ```
 
-The native Wan loader additionally needs the `wan` package (`pip install` from
-the Wan2.1 repo). Without it, the diffusers backend still handles every
-diffusers-format Wan checkpoint.
+The rectified-flow convention, used everywhere:
+
+```
+x_t      = (1 - t)·x_0 + t·ε
+v_target = ε - x_0
+sampling: x ← x - dt·v          (integrating down from t = 1)
+```
+
+`RectifiedFlow.self_consistency_check()` integrates an analytic field and
+asserts it lands on the data point. Sign errors here are silent — they produce
+plausible-looking noise — which is exactly why it is a test.
+
+### 5. Distil and RL it
+
+```python
+from seedance.flow.distill import TSCDDistiller
+from seedance.reward.dance_grpo import DanceGRPO, GRPOConfig
+from seedance.reward.reward_dance import build_reward_model
+
+# 8 → 4 → 2 → 1 segments; each stage is a usable few-step sampler on the way down
+tscd = TSCDDistiller(student, teacher, segments=8)
+loss, logs = tscd.step(clean_latents); loss.backward(); tscd.after_step()
+
+# a real VLM reward if one is available, weightless proxies otherwise
+grpo = DanceGRPO(policy, build_reward_model("auto"),
+                 cfg=GRPOConfig(group_size=8, num_steps=16), decode_fn=vae.decode)
+grpo.train_step((8, 48, 13, 30, 52), optimizer, prompts=prompts * 8)
+```
+
+### 6. Verify it
+
+```bash
+python -m pytest seedance/tests -q     # 95 tests
+```
+
+The architecture tests target what fails silently: temporal causality (perturb
+the last frame, assert earlier latents are unchanged), window round-trips with
+padding, RoPE norm preservation, text-mask effect, zero-init output, and the
+flow parameterisation.
+
+---
+
+## Not reproducible from open weights
+
+`pipe.capability_report()` returns this at runtime, and every report carries it:
+
+1. **Native joint audio-video** — one dual-branch model producing both.
+2. **The `@mention` 4-modality reference system** — `story.py` implements the
+   surface (budgets, roles, resolution), not the token injection.
+3. **Seedance's emergent physics** — approximated with a simulated proxy.
+4. **The reported ~90% first-try usability rate.**
+
+The realistic ceiling for the open stack is ~60–70% of Seedance behaviour. That
+is an engineering judgment, not a measurement, and it depends on content:
+talking heads land near the top of the range, multi-character sports near the
+bottom.
+
+---
 
 ## Layout
 
@@ -182,26 +468,38 @@ diffusers-format Wan checkpoint.
 seedance/
   config.py            provenance-tagged configs, torch-free
   story.py             storyboards, references, @mention parsing, torch-free
-  models/              DiT, VAE, RoPE, attention, audio, text encoder, refiner
-  flow/                rectified flow, solvers, distillation
-  reward/              RewardDance, DanceGRPO, heuristic proxies
-  backends/            registry + detection, Wan native, diffusers, mock
-  stages/              prompt, identity, motion, physics, polish, audio, multishot
-  pipelines/           staged (runnable) and native (reference)
-  runtime/             VRAM planning, acceleration, video/audio I/O
-  bench/               Physics-IQ protocol metrics
-  examples/  tests/    runnable scripts and the test suite
+  models/              DiT · VAE · RoPE · attention · audio · text encoder · refiner
+  flow/                rectified flow · solvers · distillation
+  reward/              RewardDance · DanceGRPO · heuristic proxies
+  backends/            registry + detection · Wan native · diffusers · mock
+  stages/              prompt · identity · motion · physics · polish · audio · multishot
+  pipelines/           staged (runnable) · native (reference)
+  runtime/             VRAM planning · acceleration · video/audio I/O
+  bench/               chart renderer · logos · ablation · Physics-IQ protocol
+  assets/              logo + generated charts
+  examples/  tests/    runnable scripts and 95 tests
 ```
 
-## Hugging Face Space
+## Using it outside this repo
+
+`wan` is imported lazily and only by the native loader, so the package is
+self-contained:
 
 ```bash
-python -m seedance.app_gradio --model Wan-AI/Wan2.1-T2V-1.3B
+cp seedance/packaging/pyproject.standalone.toml ./pyproject.toml
+pip install .                    # or: pip install '.[diffusers,stages,ui]'
 ```
 
-The same file works as a Space entry point. Set `SEEDANCE_MODEL` to choose the
-checkpoint and `SEEDANCE_OFFLINE_PROMPT=0` to enable the LLM prompt rewriter.
-The model loads lazily on the first generate, so the Space boots immediately
-instead of downloading weights at startup. Use a GPU tier — L4/A10G for the
-1.3B model; CPU tiers cannot run any Wan checkpoint (`--model mock` verifies the
-UI without weights).
+Without the `wan` package, the diffusers backend still handles every
+diffusers-format Wan checkpoint.
+
+## Credits
+
+Seedance 1.0 (arXiv:2506.09113) · Seedance 1.5 Pro (arXiv:2512.13507) ·
+Seedance 2.0 (arXiv:2604.14148) · RewardDance (arXiv:2509.08826) ·
+DanceGRPO (arXiv:2505.07818) · Physics-IQ (arXiv:2501.09038) ·
+PhysGen (arXiv:2409.18964) · CameraCtrl (arXiv:2404.02101) ·
+Tora (arXiv:2407.21705) · SeedVR2 (arXiv:2506.05301) · Wan (arXiv:2503.20314).
+
+This package implements published *methods*. It contains no ByteDance weights,
+code or assets, and no vendor logos are redistributed.

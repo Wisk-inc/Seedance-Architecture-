@@ -6,6 +6,8 @@
     seedance generate --model <repo> --prompt "..." --output out.mp4
     seedance arch [--variant seedance-2.0]   # the architecture, summarised
     seedance bench <video.mp4>           # QA metrics on a finished clip
+    seedance chart --results capability_coverage --out chart.svg
+    seedance ablate --model <repo> --prompt "..."   # measure the stages
 
 Only ``generate`` and ``bench`` need torch; the rest run on a bare interpreter.
 """
@@ -91,6 +93,31 @@ def build_parser() -> argparse.ArgumentParser:
     p_gen.add_argument("--report", default=None, help="write the JSON report here")
     p_gen.add_argument("--dry-run", action="store_true",
                        help="resolve everything and print the plan without sampling")
+
+    p_chart = sub.add_parser("chart", help="render a benchmark chart (SVG, optional PNG)")
+    p_chart.add_argument(
+        "--results",
+        default="capability_coverage",
+        help="path to a results JSON, or the name of a shipped one "
+             "(capability_coverage, reward_scaling)",
+    )
+    p_chart.add_argument("--out", default=None, help="output .svg (default: alongside assets/)")
+    p_chart.add_argument("--png", action="store_true", help="also write a PNG (needs cairosvg)")
+    p_chart.add_argument("--sort", action="store_true", help="sort bars by value")
+    p_chart.add_argument("--all", action="store_true", help="render every shipped results file")
+
+    p_ablate = sub.add_parser(
+        "ablate", help="measure what each pipeline stage adds, on your own hardware"
+    )
+    p_ablate.add_argument("--model", default="Wan-AI/Wan2.1-T2V-1.3B")
+    p_ablate.add_argument("--prompt",
+                          default="a glass marble rolls off a wooden table and bounces twice on tile")
+    p_ablate.add_argument("--size", default=None)
+    p_ablate.add_argument("--frames", type=int, default=49)
+    p_ablate.add_argument("--steps", type=int, default=None)
+    p_ablate.add_argument("--seed", type=int, default=1234)
+    p_ablate.add_argument("--out-dir", default="bench_out")
+    p_ablate.add_argument("--device-id", type=int, default=0)
 
     p_bench = sub.add_parser("bench", help="QA metrics for an existing video")
     p_bench.add_argument("video")
@@ -317,6 +344,72 @@ def cmd_bench(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_chart(args: argparse.Namespace) -> int:
+    from .bench.leaderboard import load_benchmark, render_png, render_svg
+    from .bench.make_charts import ASSETS_DIR, RESULTS_DIR, render_all
+
+    if args.all:
+        for path in render_all():
+            print(path)
+        return 0
+
+    source = args.results
+    if not os.path.exists(source):
+        candidate = os.path.join(RESULTS_DIR, f"{source}.json")
+        if not os.path.exists(candidate):
+            shipped = [f[:-5] for f in sorted(os.listdir(RESULTS_DIR)) if f.endswith(".json")]
+            print(f"no results file {source!r}; shipped: {', '.join(shipped)}", file=sys.stderr)
+            return 1
+        source = candidate
+
+    benchmarks = load_benchmark(source)
+    stem = args.out or os.path.join(
+        ASSETS_DIR, os.path.basename(source)[:-5] + ".svg"
+    )
+    for i, benchmark in enumerate(benchmarks):
+        out = stem if len(benchmarks) == 1 else stem[:-4] + f"-{i + 1}.svg"
+        render_svg(benchmark, out, sort_by_value=args.sort)
+        print(out)
+        if args.png:
+            png = render_png(benchmark, out[:-4] + ".png", sort_by_value=args.sort)
+            print(png or "(PNG skipped: pip install cairosvg)")
+    return 0
+
+
+def cmd_ablate(args: argparse.Namespace) -> int:
+    from .bench.ablation import run_ablation
+    from .bench.leaderboard import render_svg, save_benchmark
+
+    result = run_ablation(
+        args.model,
+        prompt=args.prompt,
+        size=args.size,
+        num_frames=args.frames,
+        sampling_steps=args.steps,
+        seed=args.seed,
+        output_dir=args.out_dir,
+        device_id=args.device_id,
+        progress=lambda stage, message: print(f"[{stage}] {message}", flush=True),
+    )
+
+    print()
+    print(f"{'configuration':<28}{'composite':>10}{'seconds':>10}")
+    print("-" * 48)
+    for row in result["rows"]:
+        print(f"{row['name']:<28}{row['composite']:>10.1f}{row['seconds']:>10.1f}")
+    baseline = result["rows"][0]["composite"]
+    best = max(row["composite"] for row in result["rows"])
+    print(f"\nstaged pipeline vs baseline: {best - baseline:+.1f} points")
+
+    results_path = os.path.join(args.out_dir, "ablation.json")
+    save_benchmark(result["benchmarks"], results_path)
+    chart_path = os.path.join(args.out_dir, "ablation.svg")
+    render_svg(result["benchmarks"][0], chart_path)
+    print(f"results: {results_path}")
+    print(f"chart:   {chart_path}")
+    return 0
+
+
 COMMANDS = {
     "doctor": cmd_doctor,
     "models": cmd_models,
@@ -324,6 +417,8 @@ COMMANDS = {
     "arch": cmd_arch,
     "generate": cmd_generate,
     "bench": cmd_bench,
+    "chart": cmd_chart,
+    "ablate": cmd_ablate,
 }
 
 

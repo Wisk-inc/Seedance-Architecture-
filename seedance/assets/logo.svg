@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Seedance</title>
+  <desc>Three frame bars (spatial attention) crossed by one temporal bar that
+  passes through the latent frame — the decoupled spatial/temporal split.
+  Solid white on black, no gradients.</desc>
+  <rect width="512" height="512" fill="#000000"/>
+
+  <!-- the latent frame -->
+  <rect x="96" y="96" width="320" height="320" rx="48" fill="none" stroke="#FFFFFF" stroke-width="22"/>
+
+  <!-- three spatial bars: attention within each frame -->
+  <rect x="159" y="156" width="34" height="200" rx="17" fill="#FFFFFF"/>
+  <rect x="239" y="156" width="34" height="200" rx="17" fill="#FFFFFF"/>
+  <rect x="319" y="156" width="34" height="200" rx="17" fill="#FFFFFF"/>
+
+  <!-- the temporal axis: one bar across every frame, cutting through the
+       border. Knocked out in black first so it reads as its own layer. -->
+  <rect x="40" y="232" width="432" height="48" rx="24" fill="#000000"/>
+  <rect x="48" y="242" width="416" height="28" rx="14" fill="#FFFFFF"/>
+</svg>

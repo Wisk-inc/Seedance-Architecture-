@@ -36,18 +36,27 @@ In this repository, we present **Wan2.1**, a comprehensive and open suite of vid
 
 ## Seedance-architecture package (`seedance/`)
 
+<p align="center">
+  <img src="seedance/assets/logo-wordmark.svg" alt="Seedance" width="520">
+</p>
+
 This tree also contains `seedance/`, a from-the-papers implementation of the
 **Seedance** architecture (decoupled spatial/temporal MMDiT, temporally-causal
 (4,16,16)/C=48 VAE with a Thin decoder, multishot MM-RoPE, the unified
 channel-concat task formulation, the cascaded refiner, the dual-branch audio
 design, TSCD/score/adversarial distillation, RewardDance and DanceGRPO), plus a
-four-stage pipeline that runs that recipe over **any Wan checkpoint**:
+four-stage pipeline that runs that recipe over **any Wan checkpoint**.
+
+<p align="center">
+  <img src="seedance/assets/capability_coverage.svg" alt="Capability coverage across video generators" width="820">
+</p>
 
 ```bash
 python -m seedance.cli doctor                 # what this machine can run
 python -m seedance.cli models                 # known Wan checkpoints
 python -m seedance.cli generate --model Wan-AI/Wan2.1-T2V-1.3B \
     --prompt "a red fox trotting through fresh snow" --output fox.mp4
+python -m seedance.cli chart --all            # regenerate the benchmark charts
 ```
 
 There are no public Seedance weights, so the architecture half runs but does not
